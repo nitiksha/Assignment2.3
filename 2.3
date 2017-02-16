@@ -1,0 +1,69 @@
+All components of Hadoop 1.x
+
+
+Hadoop System is a Master-Slave architecture. Hadoop 1.x file system has 64 MB block size.
+The default replication factor in Hadoop is 3, which is configurable.
+
+There are total 5 components in Hadoop 1.x architecture
+
+1. Name Node (NN)
+2. Data Node (DN)
+3. Secondary Name Node (SNN)
+4. Job Tracker (JT)
+5. Task Tracker (TT)
+
+Name Node, Data Node and Secondary Name Node are called as Storage components in Hadoop, whereas Job Tracker and
+Task Tracker are called as Processing components in Hadoop.
+
+Name node is a Master Node in Hadoop
+Data Node is the slave nodes in Hadoop.
+Master Node's MR component is called as Job Tracker
+Slave Node's MR component is called as Task Tracker.
+
+Details of each of the components are as below:
+
+
+x    Name Node:
+1. The job of name node is to decide, how to store the physical location of each and every file in blocks in the cluster
+2. It also manages the metadata (data about the data) of the files stored in Data nodes.
+3. Name node also decides, by combining which all physical locations in the data nodes, actual file will be generated.
+4. Namenode always stores the Metadata in FSImage and EditLogs file at regular intervals. 
+This process is called as Checkpoint mechanism. 
+
+Note: The Name node is meant for maintaining the metadata information of the complete hadoop cluster, but it will 
+never stores the actual data. The Actual data will always be stored in the Data node only.
+
+Data Node:
+Data node will store the file data in blocks, as per the instructions from Name node.
+Data node will send the RPC signal at regular interval, to notify the Name node that it is alive and working.
+(called as Heart beat mechanism)
+
+Secondary Name Node:
+Secondary Name node acts as a backup for Name node.
+It stores the meta data information from Name node at regular interval as per checkpoint mechanism.
+When Name node goes down, in that case Secondary Name node comes into picture and act as a temporary Name node,
+till Name node becomes active again.
+
+The working of the Secondary Name Node is described in details later blogs.
+
+Job Tracker
+1. Job Tracker most of the times resides in the same node as of Name Node.
+2. It's job is to assign the task to the Data nodes/Task trackers
+3. It also decides the job scheduling for the data nodes/Task trackers.
+4. In case of Job failure, Job tracker decides about the rescheduling of the task on some other nodes.
+Job Tracker is also called as Single Point of Failure ( SPOF).
+
+Task Tracker
+1. Task tracker's job is to execute the task assigned by Job tracker.
+
+Note: The communication between Job Tracker and Task Tracker is via MR jobs only.
+
+
+How does the components in Hadoop work collaboratively?
+When client request the data from Hadoop System
+When Hadoop system receives the client request, it is first received by the Master node.
+Master node's MR component "Job Tracker" is responsible for receiving the client work and assigns the task to Task trackers,
+once divides the work into manageable independent task.
+Slave node's MR component "Task Tracker" receives the tasks from "Job Tracker" and performs the work using MR.
+Once all the Task trackers finished their work, JT takes those results and combines to produce the final result.
+At last, Hadoop system sends the results back to clients.
